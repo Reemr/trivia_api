@@ -67,18 +67,8 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'resources not found')
 
-    def test_get_questions_by_category(self):
-        res = self.client().get('/categories/1/questions')
-        data = json.loads(res.data)
-
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
-        self.assertTrue(len(data['questions']))
-        self.assertTrue(data['total_questions'])
-        self.assertTrue(data['current_category'])
-    '''
     def test_deleted_question(self):
-        idd = 12
+        idd = 10
         res = self.client().delete('/questions/{}'.format(idd))
         data = json.loads(res.data)
 
@@ -88,7 +78,15 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
         self.assertEqual(data['deleted'], idd)
         self.assertEqual(question, None)
-    '''
+    
+    def test_404_delete_question_not_found(self):
+        res = self.client().delete('/questions/1')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'resources not found')
+
 
     def test_create_question(self):
         res = self.client().post('/questions', json=self.new_question)
@@ -106,15 +104,32 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(len(data['questions']))
         self.assertTrue(data['total_questions'])
         self.assertTrue(data['current_category'])
-    '''
-    def test_400_method_not_allowed_with_search(self):
-        res = self.client().post('/questions', json={"searchTerm":'wonderful', "ss":"y"})
+    
+    def test_400_create_or_search_bad_request(self):
+        res = self.client().post('/questions', json={'search':'wonder'})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 400)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], 'bad request')
-    '''
+    
+    def test_get_questions_by_category(self):
+        res = self.client().get('/categories/1/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data['success'], True)
+        self.assertTrue(len(data['questions']))
+        self.assertTrue(data['total_questions'])
+        self.assertTrue(data['current_category'])
+
+    def test_404_get_questions_by_category_not_found(self):
+        res = self.client().get('/categories/20/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'resources not found')
 
     def test_play_quiz(self):
         res = self.client().post('/quizzes', json={'previous_questions':[], 'quiz_category':{'type':'click', 'id':0}})
@@ -123,6 +138,22 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertTrue(data['question'])
+
+    def test_422_unprocessable_play_quiz(self):
+        res = self.client().post('/quizzes', json={'previous_questions':[20,21,22], 'quiz_category':{'type':'Science', 'id':0}})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'unprocessable')
+
+    def test_405_method_not_allowed(self):
+        res = self.client().get('/quizzes', json={'previous_questions':[20,21,22], 'quiz_category':{'type':'Science', 'id':0}})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 405)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'method not allowed')
 
 
 
