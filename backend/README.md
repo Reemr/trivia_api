@@ -72,9 +72,11 @@ This README is missing documentation of your endpoints. Below is an example for 
 
 Endpoints
 GET '/categories'
-GET ...
-POST ...
-DELETE ...
+GET '/questions'
+GET '/categories/<int:category_id>/questions'
+POST '/questions'
+DELETE '/questions'
+POST '/quizzes'
 
 GET '/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
@@ -86,6 +88,86 @@ GET '/categories'
 '4' : "History",
 '5' : "Entertainment",
 '6' : "Sports"}
+
+GET '/questions'
+- Fetches a dictionary of questions in a paginated form
+- Request Argument: None
+- Returns: An object with a list of questions, total questions, list of categories, current category.
+"categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  }
+"current_category": "Science"
+"questions": [
+    {
+      "answer": "Blood",
+      "category": 1,
+      "difficulty": 4,
+      "id": 22,
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    },..]
+"total_questions": 19
+
+GET '/categories/<int:category_id>/questions'
+- Fetches questions based on category specified.
+- Request: None
+- Returns: An object with a list of questions, current category, total questions.
+"current_category": "Science",
+"questions": [
+    {
+      "answer": "Blood",
+      "category": 1,
+      "difficulty": 4,
+      "id": 22,
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    },..]
+"total_questions": 3
+
+POST '/questions'
+- Create new question with specifiying the question, answer, category, and the difficulty. The new question will be added to the database.
+- Request Argument: question, answer, category, difficulty
+- Returns: None.
+
+POST '/questions'
+- Search for a word in questions by specifiying the search word. The search will list a set of questions found that has the same word.
+- Request Argument: searchTerm
+- Returns: An object with a list of questions, current category, total questions for search word.
+"current_category": "Science",
+"questions": [
+    {
+      "answer": "Blood",
+      "category": 1,
+      "difficulty": 4,
+      "id": 22,
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    },..]
+"total_questions": 1
+
+DELETE '/questions'
+- Delets a question from the database by taking the question id.
+- Request: None
+- Returns: An object with deleted question id
+{
+    "deleted": 1
+}
+
+POST '/quizzes'
+- Play the quiz by sending certain category and previos questions. Getting question at a time based on category selected.
+- Request: previos_questions, quiz_category
+- Returns: An object with a question as a value.
+{
+    "question":{
+        "answer": "Blood",
+        "category": 1,
+        "difficulty": 4,
+        "id": 22,
+        "question": "Hematology is a branch of medicine involving the study of what?"
+    }
+}
 
 ```
 
